@@ -20,12 +20,20 @@ export  class  AuthService {
   }
 
   async signUp(userData: SignUpRequest): Promise<AuthResponse> {
+    const userSignupData = {
+      firstname: userData.name.split(' ')[0] || '',
+      lastname: userData.name.split(' ')[1] || '' ,
+      email: userData.email,
+      password: userData.password,
+      phone: userData.phone,
+      address: userData.address,
+    };
     const response = await fetch(`${this.baseUrl}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(userData),
+      body: JSON.stringify(userSignupData),
     });
 
     if (!response.ok) {

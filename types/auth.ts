@@ -7,6 +7,8 @@ export interface SignUpRequest {
   email: string;
   password: string;
   name: string;
+  phone: string;
+  address: string;
 }
 
 export type AuthResponse = {
