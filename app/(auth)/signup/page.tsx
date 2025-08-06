@@ -259,6 +259,14 @@ export default function Page() {
               Sign In
             </Link>
           </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? 'Creating Account...' : 'Continue'}
+          </Button>
         </form>
       </Form>
     </Suspense>
