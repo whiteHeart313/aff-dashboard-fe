@@ -25,9 +25,10 @@ export  class  AuthService {
       lastname: userData.name.split(' ')[1] || '' ,
       email: userData.email,
       password: userData.password,
-      phone: userData.phone,
-      address: userData.address,
+      phone: userData.phone || '',
+      address: userData.address || '',
     };
+    console.log('User signup data:', userSignupData);
     const response = await fetch(`${this.baseUrl}/signup`, {
       method: 'POST',
       headers: {

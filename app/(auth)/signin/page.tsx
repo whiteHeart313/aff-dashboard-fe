@@ -46,9 +46,12 @@ export default function Page() {
         email: values.email,
         password: values.password,
       });
-      if (response.success === 'true') {
+      console.log('SignIn response:', response);
+      if (response.success) {
+        console.log('SignIn successful:');
         router.push('/');
       } else {
+        console.log('SignIn failed:');
         setError(response.error);
       }
     } catch (err) {
@@ -182,9 +185,13 @@ export default function Page() {
         <div className="flex flex-col gap-2.5">
           <Button type="submit" disabled={isProcessing}>
             {isProcessing ? (
-              <LoaderCircleIcon className="size-4 animate-spin" />
-            ) : null}
-            Continue
+              <>
+                <LoaderCircleIcon className="size-4 animate-spin mr-2" />
+                Signing In...
+              </>
+            ) : (
+              'Continue'
+            )}
           </Button>
         </div>
 

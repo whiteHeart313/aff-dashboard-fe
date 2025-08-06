@@ -12,11 +12,11 @@ export interface SignUpRequest {
 }
 
 export type AuthResponse = {
-  success: "true";
+  success: true ;
   token: string;
   user: User
 } | {
-  success: "false";
+  success: false;
   error: string;
 };
 

@@ -1,58 +1,24 @@
 // pages/api/auth/signup.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyRecaptchaToken } from '@/lib/recaptcha';
-import {
-  getSignupSchema,
-  SignupSchemaType,
-} from '@/app/(auth)/forms/signup-schema';
+
 
 export async function POST(req: NextRequest) {
   try {
-    const recaptchaToken = req.headers.get('x-recaptcha-token');
-
-    if (!recaptchaToken) {
-      return NextResponse.json(
-        { message: 'reCAPTCHA verification required' },
-        { status: 400 },
-      );
-    }
-
-    const isValidToken = await verifyRecaptchaToken(recaptchaToken);
-
-    if (!isValidToken) {
-      return NextResponse.json(
-        { message: 'reCAPTCHA verification failed' },
-        { status: 400 },
-      );
-    }
 
     // Parse the request body as JSON.
     const body = await req.json();
 
-    // Validate the data using safeParse.
-    const result = getSignupSchema().safeParse(body);
-    if (!result.success) {
-      return NextResponse.json(
-        {
-          message: 'Invalid input. Please check your data and try again.',
-        },
-        { status: 400 },
-      );
-    }
-
-    const { email, password, name }: SignupSchemaType = result.data;
-
-    // Call your backend API for signup
     console.log(`Sending signup request to backend: ${process.env.BACKEND_API_URL}/signup`);
+    console.log('Data to be sent:', body);
     const backendResponse = await fetch(`${process.env.BACKEND_API_URL}/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify(body),
     });
 
-    console.log('Backend response status:', backendResponse.status);
+    console.log('Backend response :', backendResponse);
     
     if (!backendResponse.ok) {
       const errorData = await backendResponse.json();

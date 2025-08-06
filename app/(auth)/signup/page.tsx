@@ -4,9 +4,9 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Check, Eye, EyeOff } from 'lucide-react';
+import { AlertCircle, Check, Eye, EyeOff, LoaderCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { apiFetch } from '@/lib/api';
+import { authService } from '@/services/auth.service';
 import { Alert, AlertIcon, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -26,6 +26,7 @@ export default function Page() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordConfirmationVisible, setPasswordConfirmationVisible] =
     useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean | null>(false);
 
@@ -33,7 +34,7 @@ export default function Page() {
     resolver: zodResolver(getSignupSchema()),
     defaultValues: {
       name: '',
-      phone : '',
+      phone: '',
       email: '',
       password: '',
       address: '',
@@ -48,22 +49,16 @@ export default function Page() {
     if (!result) return;
 
     try {
+      setIsLoading(true);
       const values = form.getValues();
       setError(null);
 
-      const response = await apiFetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
+      const response = await authService.signUp(values);
 
-      if (!response.ok) {
-        const { message } = await response.json();
-        setError(message);
+      if (response.success) {
+        router.push('/signin');
       } else {
-        router.push('/');
+        setError(response.error);
       }
     } catch (err) {
       setError(
@@ -71,6 +66,8 @@ export default function Page() {
           ? err.message
           : 'An unexpected error occurred. Please try again.'
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -127,6 +124,7 @@ export default function Page() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="phone"
@@ -153,7 +151,6 @@ export default function Page() {
               </FormItem>
             )}
           />
-          
 
           <FormField
             control={form.control}
@@ -288,13 +285,15 @@ export default function Page() {
               Sign In
             </Link>
           </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={form.formState.isSubmitting}
-          >
-            {form.formState.isSubmitting ? 'Creating Account...' : 'Continue'}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <LoaderCircle className="size-4 animate-spin mr-2" />
+                Creating Account...
+              </>
+            ) : (
+              'Continue'
+            )}
           </Button>
         </form>
       </Form>

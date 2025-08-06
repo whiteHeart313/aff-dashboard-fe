@@ -68,7 +68,7 @@ export const useAuth = () => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
     try {
       const response = await authService.signIn(credentials);
-      if (response.success === 'true') {
+      if (response.success) {
         authService.setToken(response.token);
         setAuthState({
           isAuthenticated: true,
@@ -97,7 +97,7 @@ export const useAuth = () => {
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
     try {
       const response = await authService.signUp(userData);
-      if (response.success === 'true') {
+      if (response.success) {
         authService.setToken(response.token);
         setAuthState({
           isAuthenticated: true,
