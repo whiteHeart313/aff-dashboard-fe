@@ -33,8 +33,10 @@ export default function Page() {
     resolver: zodResolver(getSignupSchema()),
     defaultValues: {
       name: '',
+      phone : '',
       email: '',
       password: '',
+      address: '',
       passwordConfirmation: '',
       accept: false,
     },
@@ -99,7 +101,7 @@ export default function Page() {
         <form onSubmit={handleSubmit} className="block w-full space-y-5">
           <div className="space-y-1.5 pb-3">
             <h1 className="text-2xl font-semibold tracking-tight text-center">
-              Sign Up to Metronic
+              Sign Up to SecondProfit
             </h1>
           </div>
 
@@ -125,6 +127,33 @@ export default function Page() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>mobile number </FormLabel>
+                <FormControl>
+                  <Input placeholder="Your mobile number " {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="Your address" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
 
           <FormField
             control={form.control}
