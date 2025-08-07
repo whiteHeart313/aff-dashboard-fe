@@ -43,7 +43,7 @@ const OffersTable = () => {
     pageSize: 5,
   });
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'updatedAt', desc: true },
+    { id: 'offerId', desc: true },
   ]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,6 +53,28 @@ const OffersTable = () => {
     limit: pagination.pageSize,
     search: searchQuery,
   });
+
+  // Filter out rows that have no meaningful data
+  const filteredOffers = useMemo(() => {
+    return (
+      offers?.filter(offer => {
+        // Check if the offer has at least some meaningful data
+        return (
+          offer.offerId ||
+          offer.offerName ||
+          offer.landingPage ||
+          offer.payout ||
+          offer.payoutModel ||
+          offer.offerAvailability ||
+          offer.mobileOperator ||
+          offer.connectionType ||
+          offer.restriction ||
+          offer.flow ||
+          offer.landingPageLanguage
+        );
+      }) || []
+    );
+  }, [offers]);
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -105,7 +127,7 @@ const OffersTable = () => {
         ),
         cell: ({ row }) => (
           <span className="font-medium text-sm text-mono">
-            {row.original.offerId}
+            {row.original.offerId || ''}
           </span>
         ),
         enableSorting: true,
@@ -123,10 +145,10 @@ const OffersTable = () => {
         cell: ({ row }) => (
           <div className="flex flex-col gap-1">
             <span className="leading-none font-medium text-sm text-mono hover:text-primary">
-              {row.original.offerName}
+              {row.original.offerName || ''}
             </span>
             <span className="text-xs text-secondary-foreground">
-              {row.original.flow}
+              {row.original.flow || ''}
             </span>
           </div>
         ),
@@ -150,16 +172,18 @@ const OffersTable = () => {
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <span className="text-sm text-secondary-foreground truncate max-w-[120px]">
-              {row.original.landingPage}
+              {row.original.landingPage || ''}
             </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0"
-              onClick={() => window.open(row.original.landingPage, '_blank')}
-            >
-              <ExternalLink className="h-3 w-3" />
-            </Button>
+            {row.original.landingPage && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={() => window.open(row.original.landingPage, '_blank')}
+              >
+                <ExternalLink className="h-3 w-3" />
+              </Button>
+            )}
           </div>
         ),
         enableSorting: true,
@@ -175,7 +199,7 @@ const OffersTable = () => {
           <DataGridColumnHeader title="Mobile Operator" column={column} />
         ),
         cell: ({ row }) => (
-          <span className="text-sm">{row.original.mobileOperator}</span>
+          <span className="text-sm">{row.original.mobileOperator || ''}</span>
         ),
         enableSorting: true,
         size: 130,
@@ -191,7 +215,7 @@ const OffersTable = () => {
         ),
         cell: ({ row }) => (
           <span className="font-medium text-sm">
-            ${row.original.payout.toFixed(2)}
+            {row.original.payout || ''}
           </span>
         ),
         enableSorting: true,
@@ -207,11 +231,15 @@ const OffersTable = () => {
           <DataGridColumnHeader title="Status" column={column} />
         ),
         cell: ({ row }) => (
-          <Badge
-            variant={getStatusBadgeVariant(row.original.offerAvailability)}
-          >
-            {row.original.offerAvailability}
-          </Badge>
+          <>
+            {row.original.offerAvailability && (
+              <Badge
+                variant={getStatusBadgeVariant(row.original.offerAvailability)}
+              >
+                {row.original.offerAvailability}
+              </Badge>
+            )}
+          </>
         ),
         enableSorting: true,
         size: 100,
@@ -226,7 +254,9 @@ const OffersTable = () => {
           <DataGridColumnHeader title="Language" column={column} />
         ),
         cell: ({ row }) => (
-          <span className="text-sm">{row.original.landingPageLanguage}</span>
+          <span className="text-sm">
+            {row.original.landingPageLanguage || ''}
+          </span>
         ),
         enableSorting: true,
         size: 100,
@@ -241,9 +271,15 @@ const OffersTable = () => {
           <DataGridColumnHeader title="Payout Model" column={column} />
         ),
         cell: ({ row }) => (
-          <Badge variant={getPayoutModelBadgeVariant(row.original.payoutModel)}>
-            {row.original.payoutModel}
-          </Badge>
+          <>
+            {row.original.payoutModel && (
+              <Badge
+                variant={getPayoutModelBadgeVariant(row.original.payoutModel)}
+              >
+                {row.original.payoutModel}
+              </Badge>
+            )}
+          </>
         ),
         enableSorting: true,
         size: 110,
@@ -259,7 +295,7 @@ const OffersTable = () => {
         ),
         cell: ({ row }) => (
           <span className="text-sm capitalize">
-            {row.original.connectionType}
+            {row.original.connectionType || ''}
           </span>
         ),
         enableSorting: true,
@@ -276,7 +312,7 @@ const OffersTable = () => {
         ),
         cell: ({ row }) => (
           <span className="text-sm text-secondary-foreground">
-            {row.original.restriction}
+            {row.original.restriction || ''}
           </span>
         ),
         enableSorting: true,
@@ -291,8 +327,8 @@ const OffersTable = () => {
 
   const table = useReactTable({
     columns,
-    data: offers,
-    pageCount: Math.ceil((offers?.length || 0) / pagination.pageSize),
+    data: filteredOffers,
+    pageCount: Math.ceil((filteredOffers?.length || 0) / pagination.pageSize),
     getRowId: (row: Offer) => String(row.id),
     state: {
       pagination,
@@ -324,7 +360,7 @@ const OffersTable = () => {
   return (
     <DataGrid
       table={table}
-      recordCount={offers?.length || 0}
+      recordCount={filteredOffers?.length || 0}
       tableLayout={{
         columnsPinnable: true,
         columnsMovable: true,

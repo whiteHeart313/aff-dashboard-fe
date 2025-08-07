@@ -28,13 +28,14 @@ export class OfferService {
 
   async getOffers(filters: OfferFilters = {}): Promise<OfferResponse> {
     const params = new URLSearchParams();
-    
+
     if (filters.page) params.append('page', filters.page.toString());
     if (filters.limit) params.append('limit', filters.limit.toString());
     if (filters.search) params.append('search', filters.search);
     if (filters.status) params.append('status', filters.status);
     if (filters.payoutModel) params.append('payoutModel', filters.payoutModel);
-    if (filters.mobileOperator) params.append('mobileOperator', filters.mobileOperator);
+    if (filters.mobileOperator)
+      params.append('mobileOperator', filters.mobileOperator);
 
     const response = await fetch(`${this.baseUrl}?${params}`);
 
@@ -42,30 +43,28 @@ export class OfferService {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to fetch offers');
     }
-    console.log('Offers fetched successfully:', await response.json());
+
+    const responseData = await response.json();
+    console.log('Offers fetched successfully:', responseData);
+
     return {
       success: true,
       message: 'Offers retrieved successfully',
       data: {
-        offers: await response.json(),
-        pagination: {
-          page: 0,
-          limit: 0,
-          total: 0,
-          totalPages: 0
-        }
+        offers: responseData.data,
+        pagination: responseData.data?.pagination,
       },
-    }
+    };
   }
 
   async getOfferById(id: string): Promise<Offer> {
     const response = await fetch(`${this.baseUrl}/${id}`);
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to fetch offer');
     }
-    
+
     const data = await response.json();
     return data.data;
   }
@@ -78,12 +77,12 @@ export class OfferService {
       },
       body: JSON.stringify(offer),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to create offer');
     }
-    
+
     const data = await response.json();
     return data.data;
   }
@@ -96,12 +95,12 @@ export class OfferService {
       },
       body: JSON.stringify(offer),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to update offer');
     }
-    
+
     const data = await response.json();
     return data.data;
   }
@@ -110,7 +109,7 @@ export class OfferService {
     const response = await fetch(`${this.baseUrl}/${id}`, {
       method: 'DELETE',
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to delete offer');
