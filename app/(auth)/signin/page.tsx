@@ -49,7 +49,7 @@ export default function Page() {
       console.log('SignIn response:', response);
       if (response.success) {
         console.log('SignIn successful:');
-        router.push('/');
+        router.push('/dashboard/offers');
       } else {
         console.log('SignIn failed:');
         setError(response.error);
