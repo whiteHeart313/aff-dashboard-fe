@@ -14,3 +14,4 @@ export interface Offer {
   createdAt: string;
   updatedAt: string;
 }
+ 

@@ -37,13 +37,25 @@ export class OfferService {
     if (filters.mobileOperator) params.append('mobileOperator', filters.mobileOperator);
 
     const response = await fetch(`${this.baseUrl}?${params}`);
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to fetch offers');
     }
-    
-    return response.json();
+    console.log('Offers fetched successfully:', await response.json());
+    return {
+      success: true,
+      message: 'Offers retrieved successfully',
+      data: {
+        offers: await response.json(),
+        pagination: {
+          page: 0,
+          limit: 0,
+          total: 0,
+          totalPages: 0
+        }
+      },
+    }
   }
 
   async getOfferById(id: string): Promise<Offer> {
