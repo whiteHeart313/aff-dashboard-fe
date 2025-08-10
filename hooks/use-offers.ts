@@ -53,7 +53,7 @@ export function useOffers({
       const response = await offerService.getOffers(filters);
       console.log('here in user-offers , this is the response offers  :', response.data.offers);
       if (response.success) {
-        setOffers(Array.isArray(response.data.offers) ? response.data.offers : Object.values(response.data.offers));
+        setOffers(Array.isArray(response.data.offers) ? response.data.offers : [response.data.offers]);
         setPagination(response.data.pagination);
       } else {
         setError(response.message || 'Failed to fetch offers');

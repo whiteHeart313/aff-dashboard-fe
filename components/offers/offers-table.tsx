@@ -53,7 +53,7 @@ const OffersTable = () => {
     limit: pagination.pageSize,
     search: searchQuery,
   });
-
+  console.log('Offers fetched:', offers);
   // Filter out rows that have no meaningful data
   const filteredOffers = useMemo(() => {
     return (
